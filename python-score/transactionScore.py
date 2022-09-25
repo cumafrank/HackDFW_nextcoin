@@ -27,7 +27,10 @@ def fetch_oldest_time(income_response):
     
     return oldest_date
 
-def factor_1(user_data, income_response, expense_response, date=datetime.now(timezone.utc)):
+
+# income_response JSON format: expample at: https://plaid.com/docs/api/products/income/#credit-bank_income-get-response-bank-income
+# expense_response JSON format: example at: https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts
+def factor_1(income_response, expense_response, date=datetime.now(timezone.utc)):
     
     end_date = date
     start_date = date - relativedelta(month=1)
@@ -59,11 +62,14 @@ def factor_1(user_data, income_response, expense_response, date=datetime.now(tim
             elif '.'.join(expense_unit['category']) in variable:
                 monthly_variableCost = expense_unit['amount']
     
-    result_score = (monthly_variableCost/monthly_fixedCost)*(monthly_debt/monthly_income)
+    result_score = (monthly_fixedCost/monthly_variableCost)*(monthly_debt/monthly_income)
     
     return result_score
 
-def factor_2(user_date, asset_response, liability_response, expense_response, date=datetime.now(timezone.utc)):
+# income_response JSON format: expample at: https://plaid.com/docs/api/products/income/#credit-bank_income-get-response-bank-income
+# expense_response JSON format: example at: https://plaid.com/docs/api/products/transactions/#transactions-get-response-accounts
+# asset_response JSON format: example at: https://plaid.com/docs/api/products/assets/#asset_report-get-response-report
+def factor_2(asset_response, liability_response, expense_response, date=datetime.now(timezone.utc)):
     
     total_asset = 0
     total_liability = 0
